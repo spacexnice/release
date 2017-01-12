@@ -10,10 +10,10 @@ Summary: Container cluster management
 License: ASL 2.0
 
 URL: https://kubernetes.io
-Source0: https://dl.k8s.io/v%{KUBE_VERSION}/bin/linux/%{ARCH}/kubelet
+Source0: http://aliacs-k8s.oss-cn-hangzhou.aliyuncs.com/binary/amd64/1.6.1/kubelet
 Source1: kubelet.service
-Source2: https://dl.k8s.io/v%{KUBE_VERSION}/bin/linux/%{ARCH}/kubectl
-Source3: https://dl.k8s.io/v%{KUBE_VERSION}/bin/linux/%{ARCH}/kubeadm
+Source2: http://aliacs-k8s.oss-cn-hangzhou.aliyuncs.com/binary/amd64/1.6.1/kubectl
+Source3: http://aliacs-k8s.oss-cn-hangzhou.aliyuncs.com/binary/amd64/1.6.1/kubeadm
 Source4: 10-kubeadm.conf
 Source5: https://dl.k8s.io/network-plugins/cni-%{ARCH}-%{CNI_RELEASE}.tar.gz
 
