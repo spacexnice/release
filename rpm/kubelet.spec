@@ -1,5 +1,11 @@
+<<<<<<< 5acf9280aa3057f1e64ed2813863c96272859549
 %global KUBE_VERSION 1.6.1
 %global CNI_RELEASE 0799f5732f2a11b329d9e3d51b9c8f2e3759f2ff
+=======
+%global KUBE_VERSION 1.6.0+alpha+88fbc68
+%global KUBEADM_VERSION 1.6.0+alpha+88fbc68
+%global CNI_RELEASE 07a8a28637e97b22eb8dfe710eeae1344f69d16e
+>>>>>>> debian package builder support aliyun oss
 %global RPM_RELEASE 0
 %global ARCH amd64
 

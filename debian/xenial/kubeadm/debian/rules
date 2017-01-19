@@ -10,7 +10,7 @@ binary:
 	mkdir -p usr/bin
 	curl --fail -sSL --retry 5 \
 		-o usr/bin/kubeadm \
-		"{{ .DownloadLinkBase }}/bin/linux/{{ .Arch }}/kubeadm"
+		"{{ .DownloadLinkBase }}/kubeadm"
 
 	chmod +x usr/bin/kubeadm
 	dh_testroot

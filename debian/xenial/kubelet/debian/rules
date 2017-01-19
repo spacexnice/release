@@ -10,7 +10,7 @@ binary:
 	mkdir -p usr/bin
 	curl  --fail -sS -L --retry 5 \
 		-o usr/bin/kubelet \
-		"{{ .DownloadLinkBase }}/bin/linux/{{ .Arch }}/kubelet"
+		"{{ .DownloadLinkBase }}/kubelet"
 	chmod +x usr/bin/kubelet
 	dh_testroot
 	dh_auto_install

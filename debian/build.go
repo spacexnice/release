@@ -46,20 +46,11 @@ type cfg struct {
 	DistroName, Arch, DebArch, Package string
 }
 
-type stringList []string
-
-func (ss *stringList) String() string {
-	return strings.Join(*ss, ",")
-}
-func (ss *stringList) Set(v string) error {
-	*ss = strings.Split(v, ",")
-	return nil
-}
-
 var (
-	architectures = stringList{"amd64", "arm", "arm64", "ppc64le", "s390x"}
-	serverDistros = stringList{"xenial"}
-	allDistros    = stringList{"xenial", "jessie", "precise", "sid", "stretch", "trusty", "utopic", "vivid", "wheezy", "wily", "yakkety"}
+	//architectures = []string{"amd64", "arm", "arm64"}
+	architectures = []string{"amd64"}
+	serverDistros = []string{"xenial"}
+	allDistros    = []string{"xenial", "jessie", "precise", "sid", "stretch", "trusty", "utopic", "vivid", "wheezy", "wily", "yakkety"}
 
 	builtins = map[string]interface{}{
 		"date": func() string {
@@ -67,14 +58,8 @@ var (
 		},
 	}
 
-	keepTmp = flag.Bool("keep-tmp", false, "keep tmp dir after build")
+	keepTmp = flag.Bool("keep_tmp", false, "keep tmp dir after build")
 )
-
-func init() {
-	flag.Var(&architectures, "arch", "Architectures to build for.")
-	flag.Var(&serverDistros, "server-distros", "Server distros to build for.")
-	flag.Var(&allDistros, "distros", "Distros to build for.")
-}
 
 func runCommand(pwd string, command string, cmdArgs ...string) error {
 	cmd := exec.Command(command, cmdArgs...)
@@ -122,7 +107,7 @@ func (c cfg) run() error {
 			return os.Mkdir(dstfile, f.Mode())
 		}
 		t, err := template.
-			New("").
+		New("").
 			Funcs(builtins).
 			Option("missingkey=error").
 			ParseFiles(srcfile)
@@ -234,6 +219,9 @@ func getStableKubeVersion() (string, error) {
 }
 
 func getLatestKubeVersion() (string, error) {
+	if v := os.Getenv("KUBE_VERION") ;v != ""{
+		return v,nil
+	}
 	return fetchVersion("https://dl.k8s.io/release/latest.txt")
 }
 
@@ -261,6 +249,10 @@ func getCIBuildsDownloadLinkBase(_ version) (string, error) {
 }
 
 func getReleaseDownloadLinkBase(v version) (string, error) {
+	if dl := os.Getenv("KUBE_BASEDOWNLOAD_LINK"); dl != ""{
+		// currently KUBE_BASEDOWNLOAD_LINK=http://aliacs-k8s.oss-cn-hangzhou.aliyuncs.com/binary/amd64/1.6.0-alpha-88fbc68
+		return dl,nil
+	}
 	return fmt.Sprintf("https://dl.k8s.io/v%s", v.Version), nil
 }
 
@@ -272,69 +264,69 @@ func main() {
 			Package: "kubectl",
 			Distros: allDistros,
 			Versions: []version{
-				{
-					GetVersion:          getStableKubeVersion,
-					Revision:            "00",
-					Channel:             ChannelStable,
-					GetDownloadLinkBase: getReleaseDownloadLinkBase,
-				},
+				//{
+				//	GetVersion:          getStableKubeVersion,
+				//	Revision:            "00",
+				//	Channel:             ChannelStable,
+				//	GetDownloadLinkBase: getReleaseDownloadLinkBase,
+				//},
 				{
 					GetVersion:          getLatestKubeVersion,
 					Revision:            "00",
 					Channel:             ChannelUnstable,
 					GetDownloadLinkBase: getReleaseDownloadLinkBase,
 				},
-				{
-					GetVersion:          getLatestCIVersion,
-					Revision:            "00",
-					Channel:             ChannelNightly,
-					GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
-				},
+				//{
+				//	GetVersion:          getLatestCIVersion,
+				//	Revision:            "00",
+				//	Channel:             ChannelNightly,
+				//	GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
+				//},
 			},
 		},
 		{
 			Package: "kubelet",
 			Distros: serverDistros,
 			Versions: []version{
-				{
-					GetVersion:          getStableKubeVersion,
-					Revision:            "00",
-					Channel:             ChannelStable,
-					GetDownloadLinkBase: getReleaseDownloadLinkBase,
-				},
+				//{
+				//	GetVersion:          getStableKubeVersion,
+				//	Revision:            "00",
+				//	Channel:             ChannelStable,
+				//	GetDownloadLinkBase: getReleaseDownloadLinkBase,
+				//},
 				{
 					GetVersion:          getLatestKubeVersion,
 					Revision:            "00",
 					Channel:             ChannelUnstable,
 					GetDownloadLinkBase: getReleaseDownloadLinkBase,
 				},
-				{
-					GetVersion:          getLatestCIVersion,
-					Revision:            "00",
-					Channel:             ChannelNightly,
-					GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
-				},
+				//{
+				//	GetVersion:          getLatestCIVersion,
+				//	Revision:            "00",
+				//	Channel:             ChannelNightly,
+				//	GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
+				//},
 			},
 		},
 		{
 			Package: "kubernetes-cni",
 			Distros: serverDistros,
 			Versions: []version{
+				//{
+				//	Version:  "0.3.0.1-07a8a2",
+				//	Revision: "00",
+				//	Channel:  ChannelStable,
+				//},
 				{
-					Version:  "0.5.1",
-					Revision: "00",
-					Channel:  ChannelStable,
-				},
-				{
-					Version:  "0.5.1",
+					Version:  "0.3.0.1-07a8a2",
 					Revision: "00",
 					Channel:  ChannelUnstable,
 				},
-				{
-					Version:  "0.5.1",
-					Revision: "00",
-					Channel:  ChannelNightly,
-				},
+				//{
+				//	Version:  "0.3.0.1-07a8a2",
+				//	Revision: "00",
+				//	Channel:  ChannelNightly,
+				//},
 			},
 		},
 		{
@@ -342,23 +334,25 @@ func main() {
 			Distros: serverDistros,
 			Versions: []version{
 				{
-					GetVersion:          getStableKubeVersion,
+					// Remember to update xenial/kubeadm/debian/rules with the same version
+					//Version:             "1.6.0-alpha.0.2074-a092d8e0f95f52",
+					GetVersion:          getLatestKubeVersion,
 					Revision:            "00",
 					Channel:             ChannelStable,
 					GetDownloadLinkBase: getReleaseDownloadLinkBase,
 				},
-				{
-					GetVersion:          getLatestKubeVersion,
-					Revision:            "00",
-					Channel:             ChannelUnstable,
-					GetDownloadLinkBase: getReleaseDownloadLinkBase,
-				},
-				{
-					GetVersion:          getLatestCIVersion,
-					Revision:            "00",
-					Channel:             ChannelNightly,
-					GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
-				},
+				//{
+				//	GetVersion:          getLatestCIVersion,
+				//	Revision:            "00",
+				//	Channel:             ChannelUnstable,
+				//	GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
+				//},
+				//{
+				//	GetVersion:          getLatestCIVersion,
+				//	Revision:            "00",
+				//	Channel:             ChannelNightly,
+				//	GetDownloadLinkBase: getCIBuildsDownloadLinkBase,
+				//},
 			},
 		},
 	}
@@ -372,12 +366,9 @@ func main() {
 		}
 		if c.Arch == "arm" {
 			c.DebArch = "armhf"
-		} else if c.Arch == "ppc64le" {
-			c.DebArch = "ppc64el"
 		} else {
 			c.DebArch = c.Arch
 		}
-
 		return c.run()
 	}); err != nil {
 		log.Fatalf("err: %v", err)
